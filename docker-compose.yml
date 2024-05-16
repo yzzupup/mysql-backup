@@ -1,0 +1,25 @@
+version: '3.0'
+services:
+  mysql:
+    image: mysql:8.0.36-debian
+    environment:
+      - MYSQL_ROOT_PASSWORD=yourPassWord
+    ports:
+      - "3306:3306"
+    volumes:
+      - /home/docker/mysql/data:/var/lib/mysql 
+      - /home/docker/mysql/conf:/etc/mysql/mysql.conf.d
+
+  backup:
+    build: .
+    volumes:
+      - /home/docker/mysql/backup:/app/backup
+    environment:
+      - HOST=targetHost
+      - PORT=targetPort
+      - MYSQL_ROOT_PASSWORD=targetPassword
+      - BACKUP_SCHEDULE=0 1 * * * # 每天凌晨一点自动备份
+      - BACKUP_DAY=7
+    depends_on:
+      - mysql
+      
